@@ -5,8 +5,6 @@
 #include <valarray>
 #include <complex>        // should come before fftw3.h so that fftw can use it
 #include "fftw3.h"
-#include "special_fnc.h"
-#include "num_algo.h"
 //
 //    為了讓 nbplot 畫 gridfnc 必需知道 private 的 x, y
 //  所以想把 nbplot 定成 friend
