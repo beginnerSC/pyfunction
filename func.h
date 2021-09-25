@@ -15,8 +15,8 @@
 //  #include "tablemaker.h"  
 //  #include "col.h"
 //
-//  template <class T> class gridfnc;
-//  template <class T> class tablemaker
+//  class gridfnc;
+//  class tablemaker
 //  {
 //  public:
 //      void nbprint( const gridfnc<>& z );
@@ -25,26 +25,26 @@
 
 using namespace std;
 
-template <class T> class gridfnc
+class gridfnc
 {
 protected: 
-    valarray<T> x, y;
-    T a, b, h;
+    valarray<double> x, y;
+    double a, b, h;
     int n;                                                            // number of grid points = n + 1
     static int order;
     static bool trap_conv;                                            // default value = 0; use midpt rule
 
     // for convolution
-    valarray<T> repeatL (const valarray<T>& a);        // 在左邊抄 n-1 次的 a[0], n = a.size()
-    valarray<T> repeatR (const valarray<T>& a);        // 在右邊抄 n-1 次的 a[n-1]，這兩個梯形法 convol 積分要用
-    valarray<T> padR (const valarray<T>& a);        // 在右邊抄 n-1 次 0, for linear convolution
-    valarray<T> truncate (const valarray<T>& a);    // 砍左右得到 convol 積分結果
+    valarray<double> repeatL (const valarray<double>& a);        // 在左邊抄 n-1 次的 a[0], n = a.size()
+    valarray<double> repeatR (const valarray<double>& a);        // 在右邊抄 n-1 次的 a[n-1]，這兩個梯形法 convol 積分要用
+    valarray<double> padR (const valarray<double>& a);        // 在右邊抄 n-1 次 0, for linear convolution
+    valarray<double> truncate (const valarray<double>& a);    // 砍左右得到 convol 積分結果
     
 public:
     gridfnc (){}
-    gridfnc (const T& a, const T& b, const int& n, T (*f)(T));
-    gridfnc (const T& a, const T& b, const int& n, const T& val);    // indicator 1_{x > val}
-    gridfnc (const T& a, const T& b, const int& n);                    // f(x) = x 
+    gridfnc (const double& a, const double& b, const int& n, double (*f)(double));
+    gridfnc (const double& a, const double& b, const int& n, const double& val);    // indicator 1_{x > val}
+    gridfnc (const double& a, const double& b, const int& n);                    // f(x) = x 
     gridfnc (const gridfnc& f);                                        // copy constructor
     ~gridfnc (void){}
     
@@ -53,160 +53,160 @@ public:
                                                                     // use_trap_conv(0): use midpt rule
     
     /*    ////////////////////////////////// 目前只有 2 階版本的成員函數 //////////////////////////////////
-    T integral ();                                                // Trapezoidal rule
-    T inner_prod (const gridfnc<T>& g);                            // integrate f*g from a to b using Trapezoidal rule, 假設 f.x = g.x
-    T inner_prod (T (*g)(T));
+    double integral ();                                                // Trapezoidal rule
+    double inner_prod (const gridfnc& g);                            // integrate f*g from a to b using Trapezoidal rule, 假設 f.x = g.x
+    double inner_prod (double (*g)(double));
     
-    gridfnc<T> derivative ();                                    // 1st derivative (function), approximated by 2nd order finite difference
-    T antiderivative ( const T& x );
-    gridfnc<T> antiderivative ();
+    gridfnc derivative ();                                    // 1st derivative (function), approximated by 2nd order finite difference
+    double antiderivative ( const double& x );
+    gridfnc antiderivative ();
 
-    void convolve_with (const gridfnc<T>& g);
-    void convolve_with (T (*g)(T));
+    void convolve_with (const gridfnc& g);
+    void convolve_with (double (*g)(double));
     
     ////////////////////////////////// 已經有 4 階版本的 //////////////////////////////////
-    T operator() ( const T& val )
-    T derivative ( const T& val )
-    T derivative_2nd ( const T& val )
+    double operator() ( const double& val )
+    double derivative ( const double& val )
+    double derivative_2nd ( const double& val )
     */
     
     // set_gridpt 改變 x，a, b, n, h, y 也跟著變
-    void set_gridpt (const T& a, const T& b, const int& n);            // set x grid pt, also used in constructors
-    void set_gridpt (const gridfnc<T>& g);                            // set *this.x = g.x
-    T integral ();                                                    // Trapezoidal rule
-    T sup ();
-    T inf ();
-    T inner_prod (const gridfnc<T>& g);                                // integrate f*g from a to b using Trapezoidal rule, 假設 f.x = g.x
-    T inner_prod (T (*g)(T));
-    gridfnc<T> apply (T (*g)(T));                                    // g(*this) 反序合成，不需要 input gridfnc 的版本因為呼叫 () 就好了
+    void set_gridpt (const double& a, const double& b, const int& n);            // set x grid pt, also used in constructors
+    void set_gridpt (const gridfnc& g);                            // set *this.x = g.x
+    double integral ();                                                    // Trapezoidal rule
+    double sup ();
+    double inf ();
+    double inner_prod (const gridfnc& g);                                // integrate f*g from a to b using Trapezoidal rule, 假設 f.x = g.x
+    double inner_prod (double (*g)(double));
+    gridfnc apply (double (*g)(double));                                    // g(*this) 反序合成，不需要 input gridfnc 的版本因為呼叫 () 就好了
     
-    gridfnc<T> derivative ();                                        // 1st derivative (function), approximated by 2nd order finite difference
-    T derivative ( const T& x );                                    // 1st derivative at x approximated by interpolating quadratic function
-    T derivative_2nd ( const T& x );                                // 2nd derivative at x approximated by interpolating cubic function
-    // gridfnc<T> antiderivative ();
-    // T antiderivative ( const T& x );
+    gridfnc derivative ();                                        // 1st derivative (function), approximated by 2nd order finite difference
+    double derivative ( const double& x );                                    // 1st derivative at x approximated by interpolating quadratic function
+    double derivative_2nd ( const double& x );                                // 2nd derivative at x approximated by interpolating cubic function
+    // gridfnc antiderivative ();
+    // double antiderivative ( const double& x );
 
-    T root_near ( const T& x0 );                                    // Newton's method
-    T root_between (T a, T b);                                        // bisection 
-    T geta ();
-    T getb ();
-    T geth ();
+    double root_near ( const double& x0 );                                    // Newton's method
+    double root_between (double a, double b);                                        // bisection 
+    double geta ();
+    double getb ();
+    double geth ();
     int getn ();
-    int getindex(const T& val);                                        // find index i such that val is in (x[i], x[i+1])
-    T getxi (const T& val);                                            // 回傳 val 左邊最近的格點
-    T getyi (const T& val);                                            // 回傳 val 左邊最近的格點上的函數值
-    valarray<T> getx ();
-    valarray<T> gety ();
-    void sety ( const valarray<T>& fncval );
-    void setyi (int i, const T& val);
+    int getindex(const double& val);                                        // find index i such that val is in (x[i], x[i+1])
+    double getxi (const double& val);                                            // 回傳 val 左邊最近的格點
+    double getyi (const double& val);                                            // 回傳 val 左邊最近的格點上的函數值
+    valarray<double> getx ();
+    valarray<double> gety ();
+    void sety ( const valarray<double>& fncval );
+    void setyi (int i, const double& val);
 
     // 假設兩函數用一樣的 x grid, 假設 a<0, b>0
-    // 目前只能跑 T = double，如果要改 long double，要呼叫別的 fftw functions，如果要改 float，至少丟進去的 array 要先轉型成 double
-    void convolve_with (const gridfnc<T>& g);
-    void convolve_with (T (*g)(T));
+    // 目前只能跑 double = double，如果要改 long double，要呼叫別的 fftw functions，如果要改 float，至少丟進去的 array 要先轉型成 double
+    void convolve_with (const gridfnc& g);
+    void convolve_with (double (*g)(double));
 
     // operators
-    gridfnc<T> operator+ () const;
-    gridfnc<T> operator- () const;
+    gridfnc operator+ () const;
+    gridfnc operator- () const;
 
-    T operator() (const T& val);
-    gridfnc<T> operator() (gridfnc<T>& f);            // 超載 () 時用 const 編譯不過。可以自己合成自己。g(h) 時用的是 g 的 x grid
-    gridfnc<T> operator() (T (*f)(T));
+    double operator() (const double& val);
+    gridfnc operator() (gridfnc& f);            // 超載 () 時用 const 編譯不過。可以自己合成自己。g(h) 時用的是 g 的 x grid
+    gridfnc operator() (double (*f)(double));
 
-    gridfnc<T>& operator= (const gridfnc<T>& f);
-    gridfnc<T>& operator= (const T& val);
-    gridfnc<T>& operator= (T (*f)(T));                // 不能丟內建函數，要自己另定義 double f(double) 才能用
+    gridfnc& operator= (const gridfnc& f);
+    gridfnc& operator= (const double& val);
+    gridfnc& operator= (double (*f)(double));                // 不能丟內建函數，要自己另定義 double f(double) 才能用
 
-    gridfnc<T>& operator*= (const gridfnc<T>& rhs);
-    gridfnc<T>& operator/= (const gridfnc<T>& rhs);
-    gridfnc<T>& operator+= (const gridfnc<T>& rhs);
-    gridfnc<T>& operator-= (const gridfnc<T>& rhs);
+    gridfnc& operator*= (const gridfnc& rhs);
+    gridfnc& operator/= (const gridfnc& rhs);
+    gridfnc& operator+= (const gridfnc& rhs);
+    gridfnc& operator-= (const gridfnc& rhs);
 
-    gridfnc<T>& operator*= (const T& val);
-    gridfnc<T>& operator/= (const T& val);
-    gridfnc<T>& operator+= (const T& val);
-    gridfnc<T>& operator-= (const T& val);
+    gridfnc& operator*= (const double& val);
+    gridfnc& operator/= (const double& val);
+    gridfnc& operator+= (const double& val);
+    gridfnc& operator-= (const double& val);
 
-    gridfnc<T>& operator*= (T (*f)(T));
-    gridfnc<T>& operator/= (T (*f)(T));
-    gridfnc<T>& operator+= (T (*f)(T));
-    gridfnc<T>& operator-= (T (*f)(T));
+    gridfnc& operator*= (double (*f)(double));
+    gridfnc& operator/= (double (*f)(double));
+    gridfnc& operator+= (double (*f)(double));
+    gridfnc& operator-= (double (*f)(double));
 
-    // nonmember functions                            operator+-*/ (T (*f)(T), const gridfnc<T>& rhs) 這種的四個都不能用
-    //                                                神奇的是 max (T (*f)(T), const gridfnc<T>& rhs) 卻可以用
+    // nonmember functions                            operator+-*/ (double (*f)(double), const gridfnc& rhs) 這種的四個都不能用
+    //                                                神奇的是 max (double (*f)(double), const gridfnc& rhs) 卻可以用
     //
-    template <class T> friend gridfnc<T> operator* (const gridfnc<T>& lhs, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator* (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator* (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> operator* (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator* (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc operator* (const gridfnc& lhs, const gridfnc& rhs);
+    friend gridfnc operator* (const double& val, const gridfnc& rhs);
+    friend gridfnc operator* (const gridfnc& lhs, const double& val);
+    friend gridfnc operator* (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc operator* (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> operator/ (const gridfnc<T>& lhs, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator/ (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator/ (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> operator/ (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator/ (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc operator/ (const gridfnc& lhs, const gridfnc& rhs);
+    friend gridfnc operator/ (const double& val, const gridfnc& rhs);
+    friend gridfnc operator/ (const gridfnc& lhs, const double& val);
+    friend gridfnc operator/ (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc operator/ (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> operator+ (const gridfnc<T>& lhs, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator+ (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator+ (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> operator+ (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator+ (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc operator+ (const gridfnc& lhs, const gridfnc& rhs);
+    friend gridfnc operator+ (const double& val, const gridfnc& rhs);
+    friend gridfnc operator+ (const gridfnc& lhs, const double& val);
+    friend gridfnc operator+ (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc operator+ (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> operator- (const gridfnc<T>& lhs, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator- (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator- (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> operator- (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> operator- (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc operator- (const gridfnc& lhs, const gridfnc& rhs);
+    friend gridfnc operator- (const double& val, const gridfnc& rhs);
+    friend gridfnc operator- (const gridfnc& lhs, const double& val);
+    friend gridfnc operator- (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc operator- (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> max (const gridfnc<T>& lhs, const gridfnc<T>& rhs);    // 假設 f.x = g.x
-    template <class T> friend gridfnc<T> max (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> max (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> max (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> max (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc max (const gridfnc& lhs, const gridfnc& rhs);    // 假設 f.x = g.x
+    friend gridfnc max (const double& val, const gridfnc& rhs);
+    friend gridfnc max (const gridfnc& lhs, const double& val);
+    friend gridfnc max (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc max (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> min (const gridfnc<T>& lhs, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> min (const T& val, const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> min (const gridfnc<T>& lhs, const T& val);
-    template <class T> friend gridfnc<T> min (T (*f)(T), const gridfnc<T>& rhs);
-    template <class T> friend gridfnc<T> min (const gridfnc<T>& lhs, T (*f)(T));
+    friend gridfnc min (const gridfnc& lhs, const gridfnc& rhs);
+    friend gridfnc min (const double& val, const gridfnc& rhs);
+    friend gridfnc min (const gridfnc& lhs, const double& val);
+    friend gridfnc min (double (*f)(double), const gridfnc& rhs);
+    friend gridfnc min (const gridfnc& lhs, double (*f)(double));
 
-    template <class T> friend gridfnc<T> convolve (const gridfnc<T>& f, const gridfnc<T>& g);    // 用 convolve_with，呼叫者會被改變；用 convolve 不會
-    template <class T> friend gridfnc<T> convolve (const gridfnc<T>& f, T (*g)(T));
-    template <class T> friend gridfnc<T> convolve (T (*g)(T), const gridfnc<T>& f);
+    friend gridfnc convolve (const gridfnc& f, const gridfnc& g);    // 用 convolve_with，呼叫者會被改變；用 convolve 不會
+    friend gridfnc convolve (const gridfnc& f, double (*g)(double));
+    friend gridfnc convolve (double (*g)(double), const gridfnc& f);
 
     // overloaded cmath functions，缺 atan2
-    template <class T> friend gridfnc<T> abs (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> acos (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> asin (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> atan (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> cos (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> cosh (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> exp (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> log (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> log10 (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> sin (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> sinh (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> sqrt (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> tan (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> tanh (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> pow (const gridfnc<T>& f, const gridfnc<T>& g);        // 假設 f.x = g.x
-    template <class T> friend gridfnc<T> pow (const gridfnc<T>& f, const T& exponent);
-    template <class T> friend gridfnc<T> pow (const T& base, const gridfnc<T>& f);
+    friend gridfnc abs (const gridfnc& f);
+    friend gridfnc acos (const gridfnc& f);
+    friend gridfnc asin (const gridfnc& f);
+    friend gridfnc atan (const gridfnc& f);
+    friend gridfnc cos (const gridfnc& f);
+    friend gridfnc cosh (const gridfnc& f);
+    friend gridfnc exp (const gridfnc& f);
+    friend gridfnc log (const gridfnc& f);
+    friend gridfnc log10 (const gridfnc& f);
+    friend gridfnc sin (const gridfnc& f);
+    friend gridfnc sinh (const gridfnc& f);
+    friend gridfnc sqrt (const gridfnc& f);
+    friend gridfnc tan (const gridfnc& f);
+    friend gridfnc tanh (const gridfnc& f);
+    friend gridfnc pow (const gridfnc& f, const gridfnc& g);        // 假設 f.x = g.x
+    friend gridfnc pow (const gridfnc& f, const double& exponent);
+    friend gridfnc pow (const double& base, const gridfnc& f);
 
     // overloaded special functions
-    template <class T> friend gridfnc<T> ncdf (const gridfnc<T>& f);
-    template <class T> friend gridfnc<T> npdf (const gridfnc<T>& f);
+    friend gridfnc ncdf (const gridfnc& f);
+    friend gridfnc npdf (const gridfnc& f);
 };
 
-template<class T> int gridfnc<T>::order = 2;
-template<class T> bool gridfnc<T>::trap_conv = 0;
+template<class T> int gridfnc::order = 2;
+template<class T> bool gridfnc::trap_conv = 0;
 
 // private functions for convolution
-template <class T> valarray<T> gridfnc<T>::repeatL(const valarray<T>& a)
+valarray<double> gridfnc::repeatL(const valarray<double>& a)
 {    
     int n = a.size();
-    valarray <T> result(2*n-1);
+    valarray<double> result(2*n-1);
     
     for(int i=0 ; i<n-1 ; i++)
         result[i] = a[0];
@@ -215,10 +215,10 @@ template <class T> valarray<T> gridfnc<T>::repeatL(const valarray<T>& a)
 
     return result;
 }
-template <class T> valarray<T> gridfnc<T>::repeatR(const valarray<T>& a)
+valarray<double> gridfnc::repeatR(const valarray<double>& a)
 {
     int n = a.size();
-    valarray <T> result(2*n-1);
+    valarray<double> result(2*n-1);
     
     for(int i=0 ; i<n-1 ; i++)
         result[i] = a[i];
@@ -227,23 +227,23 @@ template <class T> valarray<T> gridfnc<T>::repeatR(const valarray<T>& a)
 
     return result;
 }
-template <class T> valarray<T> gridfnc<T>::padR(const valarray<T>& a)
+valarray<double> gridfnc::padR(const valarray<double>& a)
 {
     int n = a.size();
-    valarray<T> result(2*n-1);
+    valarray<double> result(2*n-1);
     
     for( int i=0 ; i<a.size() ; i++ )
         result[i] = a[i];
 
     return result;
 }
-template <class T> valarray<T> gridfnc<T>::truncate(const valarray<T>& a)
+valarray<double> gridfnc::truncate(const valarray<double>& a)
 {
     // a.size() is assumed to be odd
     // n is the size of the original array before padding 
 
     int n = (a.size() + 1)/2;
-    valarray<T> result(n);
+    valarray<double> result(n);
     
     if( n%2 == 1 ){            // original size of the array is odd
         for(int i=0 ; i<n ; i++)
@@ -256,12 +256,12 @@ template <class T> valarray<T> gridfnc<T>::truncate(const valarray<T>& a)
 }
 
 // constructors
-template <class T> gridfnc<T>::gridfnc(const T& a, const T& b, const int& n, T (*f)(T))
+gridfnc::gridfnc(const double& a, const double& b, const int& n, double (*f)(double))
 {
     set_gridpt(a, b, n);
     y = x.apply(f);
 }
-template <class T> gridfnc<T>::gridfnc(const T& a, const T& b, const int& n, const T& val)
+gridfnc::gridfnc(const double& a, const double& b, const int& n, const double& val)
 {
     set_gridpt(a, b, n);
     // y = val; constant function 版本，後來改為 indicator 1_{x > val}
@@ -269,12 +269,12 @@ template <class T> gridfnc<T>::gridfnc(const T& a, const T& b, const int& n, con
     for( int i=0 ; i<=n ; i++ )
         y[i] = (x[i]>val) ? 1 : 0;
 }
-template <class T> gridfnc<T>::gridfnc(const T& a, const T& b, const int& n)
+gridfnc::gridfnc(const double& a, const double& b, const int& n)
 {
     set_gridpt(a, b, n);
     y = x;
 }
-template <class T> gridfnc<T>::gridfnc(const gridfnc<T>& f)
+gridfnc::gridfnc(const gridfnc& f)
 {
     // f 的所有東西都是 private，可是拿的到
     
@@ -282,16 +282,16 @@ template <class T> gridfnc<T>::gridfnc(const gridfnc<T>& f)
     y = f.y;
 }
 
-template <class T> void gridfnc<T>::set_order(int ord)
+void gridfnc::set_order(int ord)
 {
     order = ord;
 }
-template <class T> void gridfnc<T>::use_trap_conv(bool flag=1)
+void gridfnc::use_trap_conv(bool flag=1)
 {
     trap_conv = flag;
 }
 
-template <class T> void gridfnc<T>::set_gridpt (const T& lb, const T& ub, const int& num)
+void gridfnc::set_gridpt (const double& lb, const double& ub, const int& num)
 {
     a = lb;
     b = ub;
@@ -300,8 +300,8 @@ template <class T> void gridfnc<T>::set_gridpt (const T& lb, const T& ub, const 
     
     if( x.size()!=0 )    // 本來就有 x, y 了。會呼叫 operator() 所以 x 和 y 是不能一邊算一邊蓋掉的
     {    
-        valarray<T> tmpx(n+1);
-        valarray<T> tmpy(n+1);
+        valarray<double> tmpx(n+1);
+        valarray<double> tmpy(n+1);
     
         tmpx[0] = a;
         tmpy[0] = (*this)(a);
@@ -323,9 +323,9 @@ template <class T> void gridfnc<T>::set_gridpt (const T& lb, const T& ub, const 
             x[i] = x[i-1] + h;
     }
 }
-template <class T> void gridfnc<T>::set_gridpt (const gridfnc<T>& g)
+void gridfnc::set_gridpt (const gridfnc& g)
 {
-    valarray<T> tmpy(g.n + 1);
+    valarray<double> tmpy(g.n + 1);
 
     for(int i=0 ; i<=g.n ; i++)
         tmpy[i] = (*this)(g.x[i]);
@@ -339,41 +339,41 @@ template <class T> void gridfnc<T>::set_gridpt (const gridfnc<T>& g)
     n = g.n;
     h = g.h;
 }                            
-template <class T> T gridfnc<T>::integral()
+gridfnc::integral()
 {
     return h*(y.sum() - y[0]/2 - y[n]/2);
 }
-template <class T> T gridfnc<T>::sup()
+gridfnc::sup()
 {
     // avoid discontinuity caused by numerical err at a, b
-    valarray<T> tmpy = y;
+    valarray<double> tmpy = y;
     
     tmpy[0] = tmpy[1];
     tmpy[n] = tmpy[n-1];
     
     return tmpy.max();
 }
-template <class T> T gridfnc<T>::inf()
+gridfnc::inf()
 {
     // avoid discontinuity caused by numerical err at a, b
-    valarray<T> tmpy = y;
+    valarray<double> tmpy = y;
     
     tmpy[0] = tmpy[1];
     tmpy[n] = tmpy[n-1];
 
     return tmpy.min();
 }
-template <class T> T gridfnc<T>::inner_prod(const gridfnc<T>& g)
+gridfnc::inner_prod(const gridfnc& g)
 {
     return h*(((g.y)*y).sum() - (g.y[0])*y[0]/2 - (g.y[n])*y[n]/2);
 }
-template <class T> T gridfnc<T>::inner_prod(T (*g)(T))
+gridfnc::inner_prod(double (*g)(double))
 {
     return h*((x.apply(g)*y).sum() - (g(a))*y[0]/2 - (g(b))*y[n]/2);
 }
-template <class T> gridfnc<T> gridfnc<T>::apply(T (*g)(T))
+gridfnc gridfnc::apply(double (*g)(double))
 {
-    gridfnc<T> result; 
+    gridfnc result; 
 
     result.set_gridpt(a, b, n);
     result.y = y.apply(g);
@@ -381,7 +381,7 @@ template <class T> gridfnc<T> gridfnc<T>::apply(T (*g)(T))
     return result;
 }
 
-template <class T> T gridfnc<T>::derivative( const T& val )
+gridfnc::derivative( const double& val )
 {
     if( val < a || val > b )    return 0;
     else
@@ -402,7 +402,7 @@ template <class T> T gridfnc<T>::derivative( const T& val )
             else{
                 // 先算四個格點上的 derivative, 再用 cubic interpolation。derivative 公式來自 http://en.wikipedia.org/wiki/Five-point_stencil
 
-                T fpp[] = { (y[i-3] - 8*y[i-2] + 8*y[i]   - y[i+1])/(12*h), 
+                double fpp[] = { (y[i-3] - 8*y[i-2] + 8*y[i]   - y[i+1])/(12*h), 
                             (y[i-2] - 8*y[i-1] + 8*y[i+1] - y[i+2])/(12*h), 
                             (y[i-1] - 8*y[i]   + 8*y[i+2] - y[i+3])/(12*h), 
                             (y[i]   - 8*y[i+1] + 8*y[i+3] - y[i+4])/(12*h)    };
@@ -419,7 +419,7 @@ template <class T> T gridfnc<T>::derivative( const T& val )
         }
     }
 }
-template <class T> T gridfnc<T>::derivative_2nd( const T& val )
+gridfnc::derivative_2nd( const double& val )
 {
     if( val < a || val > b )    return 0;
     else
@@ -442,7 +442,7 @@ template <class T> T gridfnc<T>::derivative_2nd( const T& val )
             else{
                 // 先算四個格點上的 2nd derivative, 再用 cubic interpolation。derivative 公式來自 http://en.wikipedia.org/wiki/Five-point_stencil
 
-                T fpp[] = {    (-y[i-3] + 16*y[i-2] -30*y[i-1] + 16*y[i]   - y[i+1])/(12*h*h), 
+                double fpp[] = {    (-y[i-3] + 16*y[i-2] -30*y[i-1] + 16*y[i]   - y[i+1])/(12*h*h), 
                             (-y[i-2] + 16*y[i-1] -30*y[i]   + 16*y[i+1] - y[i+2])/(12*h*h), 
                             (-y[i-1] + 16*y[i]   -30*y[i+1] + 16*y[i+2] - y[i+3])/(12*h*h), 
                             (-y[i]   + 16*y[i+1] -30*y[i+2] + 16*y[i+3] - y[i+4])/(12*h*h)    };
@@ -462,9 +462,9 @@ template <class T> T gridfnc<T>::derivative_2nd( const T& val )
         }
     }
 }
-template <class T> gridfnc<T> gridfnc<T>::derivative()
+gridfnc gridfnc::derivative()
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(a, b, n);
 
@@ -477,19 +477,19 @@ template <class T> gridfnc<T> gridfnc<T>::derivative()
     return result;
 }
 
-template <class T> T gridfnc<T>::root_near( const T& x0 )
+gridfnc::root_near( const double& x0 )
 {
-    T tmpx, x = x0;
-    T absTol = 0.000000000001;    // 10^{-12}
-    T relTol = 0.000000000001;    // 10^{-12}
+    double tmpx, x = x0;
+    double absTol = 0.000000000001;    // 10^{-12}
+    double relTol = 0.000000000001;    // 10^{-12}
 
-    //gridfnc<T> fp = derivative();
+    //gridfnc fp = derivative();
 
     for(int i=0 ; i<100 ; i++)
     {
         tmpx = x;            // need last x for increment test 
         // x = x - (*this)(x)/fp(x);
-        T fp = derivative(x);
+        double fp = derivative(x);
         x = x - (*this)(x)/fp;
         if( sign(abs(x-tmpx)-(absTol + relTol*abs(x))) < 0 )
             break;
@@ -497,11 +497,11 @@ template <class T> T gridfnc<T>::root_near( const T& x0 )
 
     return x;
 }
-template <class T> T gridfnc<T>::root_between (T a, T b)
+gridfnc::root_between (double a, double b)
 {
-    T x;
-    T absTol = 0.000000000001;    // 10^{-12}
-    T relTol = 0.000000000001;    // 10^{-12}
+    double x;
+    double absTol = 0.000000000001;    // 10^{-12}
+    double relTol = 0.000000000001;    // 10^{-12}
     int S;
 
     S = floor(log((b-a)/(absTol + relTol*((abs(a)<abs(b)) ? abs(a) : abs(b))))/log(2.0));
@@ -518,53 +518,53 @@ template <class T> T gridfnc<T>::root_between (T a, T b)
     return x;
 }
 
-template <class T> int gridfnc<T>::getindex(const T& val)
+int gridfnc::getindex(const double& val)
 {
     return (int)((val - x[0])/h);
 }
-template <class T> T gridfnc<T>::geta()
+gridfnc::geta()
 {
     return a;
 }
-template <class T> T gridfnc<T>::getb()
+gridfnc::getb()
 {
     return b;
 }
-template <class T> T gridfnc<T>::geth()
+gridfnc::geth()
 {
     return h;
 }
-template <class T> T gridfnc<T>::getxi(const T& val)
+gridfnc::getxi(const double& val)
 {
     return x[ getindex(val) ];
 }
-template <class T> T gridfnc<T>::getyi(const T& val)
+gridfnc::getyi(const double& val)
 {
     return y[ getindex(val) ];
 }
-template <class T> int gridfnc<T>::getn()
+int gridfnc::getn()
 {
     return n;
 }
-template <class T> valarray<T> gridfnc<T>::getx ()
+valarray<double> gridfnc::getx ()
 {
     return x;
 }
-template <class T> valarray<T> gridfnc<T>::gety ()
+valarray<double> gridfnc::gety ()
 {
     return y;
 }
-template <class T> void gridfnc<T>::sety ( const valarray<T>& fncval )
+void gridfnc::sety ( const valarray<double>& fncval )
 {
     y = fncval;
 }
-template <class T> void gridfnc<T>::setyi ( int i, const T& val )
+void gridfnc::setyi ( int i, const double& val )
 {
     y[i] = val;
 }
 
 // convolution
-template <class T> void gridfnc<T>::convolve_with(const gridfnc<T>& g)
+void gridfnc::convolve_with(const gridfnc& g)
 {
     // 目前只能用 double
     // 假設 *this 和 g 的 x grid 相同
@@ -596,27 +596,27 @@ template <class T> void gridfnc<T>::convolve_with(const gridfnc<T>& g)
     // truncation & interpolation for even-length array
     y = truncate(a);
 }
-template <class T> void gridfnc<T>::convolve_with(T (*g)(T))
+void gridfnc::convolve_with(double (*g)(double))
 {
-    gridfnc<T> tmp(a, b, n, g);
+    gridfnc tmp(a, b, n, g);
     (*this).convolve_with(tmp);
 }
 
 // operators
-template <class T> gridfnc<T> gridfnc<T>::operator+() const
+gridfnc gridfnc::operator+() const
 {
     return *this;
 }
-template <class T> gridfnc<T> gridfnc<T>::operator-() const
+gridfnc gridfnc::operator-() const
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(a, b, n);
     result.y = -y;
     return result;
 }
 
-template <class T> T gridfnc<T>::operator()(const T& val)
+gridfnc::operator()(const double& val)
 {
     if( val < a || b < val){
         return 0;
@@ -635,9 +635,9 @@ template <class T> T gridfnc<T>::operator()(const T& val)
         }
     }
 }
-template <class T> gridfnc<T> gridfnc<T>::operator()(gridfnc<T>& f)
+gridfnc gridfnc::operator()(gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(a, b, n);
 
@@ -646,9 +646,9 @@ template <class T> gridfnc<T> gridfnc<T>::operator()(gridfnc<T>& f)
 
     return result;
 }
-template <class T> gridfnc<T> gridfnc<T>::operator()(T (*f)(T))
+gridfnc gridfnc::operator()(double (*f)(double))
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(a, b, n);
 
@@ -658,7 +658,7 @@ template <class T> gridfnc<T> gridfnc<T>::operator()(T (*f)(T))
     return result;
 }
 
-template <class T> gridfnc<T>& gridfnc<T>::operator=(const gridfnc<T>& f)
+gridfnc& gridfnc::operator=(const gridfnc& f)
 {
     x = f.x;
     y = f.y;
@@ -669,229 +669,229 @@ template <class T> gridfnc<T>& gridfnc<T>::operator=(const gridfnc<T>& f)
 
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator=(const T& val)
+gridfnc& gridfnc::operator=(const double& val)
 {
     y = val;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator=(T (*f)(T))
+gridfnc& gridfnc::operator=(double (*f)(double))
 {
     y = x.apply(f);
     return *this;
 }
 
-template <class T> gridfnc<T>& gridfnc<T>::operator*= (const gridfnc<T>& rhs)
+gridfnc& gridfnc::operator*= (const gridfnc& rhs)
 {
     y *= rhs.y;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator/= (const gridfnc<T>& rhs)
+gridfnc& gridfnc::operator/= (const gridfnc& rhs)
 {
     y /= rhs.y;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator+= (const gridfnc<T>& rhs)
+gridfnc& gridfnc::operator+= (const gridfnc& rhs)
 {
     y += rhs.y;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator-= (const gridfnc<T>& rhs)
+gridfnc& gridfnc::operator-= (const gridfnc& rhs)
 {
     y -= rhs.y;
     return *this;
 }
 
-template <class T> gridfnc<T>& gridfnc<T>::operator*= (const T& val)
+gridfnc& gridfnc::operator*= (const double& val)
 {
     y *= val;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator/= (const T& val)
+gridfnc& gridfnc::operator/= (const double& val)
 {
     y /= val;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator+= (const T& val)
+gridfnc& gridfnc::operator+= (const double& val)
 {
     y += val;
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator-= (const T& val)
+gridfnc& gridfnc::operator-= (const double& val)
 {
     y -= val;
     return *this;
 }
 
-template <class T> gridfnc<T>& gridfnc<T>::operator*= (T (*f)(T))
+gridfnc& gridfnc::operator*= (double (*f)(double))
 {
     y *= x.apply(f);
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator/= (T (*f)(T))
+gridfnc& gridfnc::operator/= (double (*f)(double))
 {
     y /= x.apply(f);
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator+= (T (*f)(T))
+gridfnc& gridfnc::operator+= (double (*f)(double))
 {
     y += x.apply(f);
     return *this;
 }
-template <class T> gridfnc<T>& gridfnc<T>::operator-= (T (*f)(T))
+gridfnc& gridfnc::operator-= (double (*f)(double))
 {
     y -= x.apply(f);
     return *this;
 }
 
 // nonmember functions 
-template <class T> gridfnc<T> operator* (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc operator* (const gridfnc& lhs, const gridfnc& rhs)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y *= rhs.y;
 
     return result;
 }
-template <class T> gridfnc<T> operator* (const T& val, const gridfnc<T>& rhs)
+gridfnc operator* (const double& val, const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y *= val;
 
     return result;
 }
-template <class T> gridfnc<T> operator* (const gridfnc<T>& lhs, const T& val)
+gridfnc operator* (const gridfnc& lhs, const double& val)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y *= val;
 
     return result;
 }
-template <class T> gridfnc<T> operator* (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc operator* (double (*f)(double), const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y *= result.x.apply(f);
 
     return result;
 }
-template <class T> gridfnc<T> operator* (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc operator* (const gridfnc& lhs, double (*f)(double))
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y *= result.x.apply(f);
 
     return result;
 }
 
-template <class T> gridfnc<T> operator/ (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc operator/ (const gridfnc& lhs, const gridfnc& rhs)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y /= rhs.y;
 
     return result;
 }
-template <class T> gridfnc<T> operator/ (const T& val, const gridfnc<T>& rhs)
+gridfnc operator/ (const double& val, const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y = val/(rhs.y);
 
     return result;
 }
-template <class T> gridfnc<T> operator/ (const gridfnc<T>& lhs, const T& val)
+gridfnc operator/ (const gridfnc& lhs, const double& val)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y /= val;
 
     return result;
 }
-template <class T> gridfnc<T> operator/ (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc operator/ (double (*f)(double), const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y = (result.x.apply(f))/(rhs.y);
 
     return result;
 }
-template <class T> gridfnc<T> operator/ (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc operator/ (const gridfnc& lhs, double (*f)(double))
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y /= result.x.apply(f);
 
     return result;
 }
 
-template <class T> gridfnc<T> operator+ (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc operator+ (const gridfnc& lhs, const gridfnc& rhs)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y += rhs.y;
 
     return result;
 }
-template <class T> gridfnc<T> operator+ (const T& val, const gridfnc<T>& rhs)
+gridfnc operator+ (const double& val, const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y += val;
 
     return result;
 }
-template <class T> gridfnc<T> operator+ (const gridfnc<T>& lhs, const T& val)
+gridfnc operator+ (const gridfnc& lhs, const double& val)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y += val;
 
     return result;
 }
-template <class T> gridfnc<T> operator+ (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc operator+ (double (*f)(double), const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y += result.x.apply(f);
 
     return result;
 }
-template <class T> gridfnc<T> operator+ (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc operator+ (const gridfnc& lhs, double (*f)(double))
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y += result.x.apply(f);
 
     return result;
 }
 
-template <class T> gridfnc<T> operator- (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc operator- (const gridfnc& lhs, const gridfnc& rhs)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y -= rhs.y;
 
     return result;
 }
-template <class T> gridfnc<T> operator- (const T& val, const gridfnc<T>& rhs)
+gridfnc operator- (const double& val, const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y = val-(rhs.y);
 
     return result;
 }
-template <class T> gridfnc<T> operator- (const gridfnc<T>& lhs, const T& val)
+gridfnc operator- (const gridfnc& lhs, const double& val)
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y -= val;
 
     return result;
 }
-template <class T> gridfnc<T> operator- (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc operator- (double (*f)(double), const gridfnc& rhs)
 {
-    gridfnc<T> result = rhs;
+    gridfnc result = rhs;
     result.y = (result.x.apply(f)) - (rhs.y);
 
     return result;
 }
-template <class T> gridfnc<T> operator- (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc operator- (const gridfnc& lhs, double (*f)(double))
 {
-    gridfnc<T> result = lhs;
+    gridfnc result = lhs;
     result.y -= result.x.apply(f);
 
     return result;
 }
 
-template <class T> gridfnc<T> max (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc max (const gridfnc& lhs, const gridfnc& rhs)
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -899,10 +899,10 @@ template <class T> gridfnc<T> max (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> max (const T& val, const gridfnc<T>& rhs)
+gridfnc max (const double& val, const gridfnc& rhs)
 {
     int n = rhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(rhs.a, rhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -910,10 +910,10 @@ template <class T> gridfnc<T> max (const T& val, const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> max (const gridfnc<T>& lhs, const T& val)
+gridfnc max (const gridfnc& lhs, const double& val)
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -921,10 +921,10 @@ template <class T> gridfnc<T> max (const gridfnc<T>& lhs, const T& val)
 
     return result;
 }
-template <class T> gridfnc<T> max (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc max (double (*f)(double), const gridfnc& rhs)
 {
     int n = rhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(rhs.a, rhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -932,10 +932,10 @@ template <class T> gridfnc<T> max (T (*f)(T), const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> max (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc max (const gridfnc& lhs, double (*f)(double))
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -944,10 +944,10 @@ template <class T> gridfnc<T> max (const gridfnc<T>& lhs, T (*f)(T))
     return result;
 }
 
-template <class T> gridfnc<T> min (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
+gridfnc min (const gridfnc& lhs, const gridfnc& rhs)
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -955,10 +955,10 @@ template <class T> gridfnc<T> min (const gridfnc<T>& lhs, const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> min (const T& val, const gridfnc<T>& rhs)
+gridfnc min (const double& val, const gridfnc& rhs)
 {
     int n = rhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(rhs.a, rhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -966,10 +966,10 @@ template <class T> gridfnc<T> min (const T& val, const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> min (const gridfnc<T>& lhs, const T& val)
+gridfnc min (const gridfnc& lhs, const double& val)
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -977,10 +977,10 @@ template <class T> gridfnc<T> min (const gridfnc<T>& lhs, const T& val)
 
     return result;
 }
-template <class T> gridfnc<T> min (T (*f)(T), const gridfnc<T>& rhs)
+gridfnc min (double (*f)(double), const gridfnc& rhs)
 {
     int n = rhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(rhs.a, rhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -988,10 +988,10 @@ template <class T> gridfnc<T> min (T (*f)(T), const gridfnc<T>& rhs)
 
     return result;
 }
-template <class T> gridfnc<T> min (const gridfnc<T>& lhs, T (*f)(T))
+gridfnc min (const gridfnc& lhs, double (*f)(double))
 {
     int n = lhs.n;
-    gridfnc<T> result;
+    gridfnc result;
     result.set_gridpt(lhs.a, lhs.b, n); 
 
     for(int i=0 ; i<=n ; i++)
@@ -1000,173 +1000,173 @@ template <class T> gridfnc<T> min (const gridfnc<T>& lhs, T (*f)(T))
     return result;
 }
 
-template <class T> gridfnc<T> convolve (const gridfnc<T>& f, const gridfnc<T>& g)
+gridfnc convolve (const gridfnc& f, const gridfnc& g)
 {
-    gridfnc<T> result = f;
+    gridfnc result = f;
     result.convolve_with( g );
     return result;
 }
-template <class T> gridfnc<T> convolve (const gridfnc<T>& f, T (*g)(T))
+gridfnc convolve (const gridfnc& f, double (*g)(double))
 {
-    gridfnc<T> result = f;
+    gridfnc result = f;
     result.convolve_with( g );
     return result;
 }
-template <class T> gridfnc<T> convolve (T (*g)(T), const gridfnc<T>& f)
+gridfnc convolve (double (*g)(double), const gridfnc& f)
 {
-    gridfnc<T> result = f;
+    gridfnc result = f;
     result.convolve_with( g );
     return result;
 }
 
 // overloaded cmath functions, 缺 atan2
-template <class T> gridfnc<T> abs (const gridfnc<T>& f)
+gridfnc abs (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = abs(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> acos (const gridfnc<T>& f)
+gridfnc acos (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = acos(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> asin (const gridfnc<T>& f)
+gridfnc asin (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = asin(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> atan (const gridfnc<T>& f)
+gridfnc atan (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = atan(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> cos (const gridfnc<T>& f)
+gridfnc cos (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = cos(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> cosh (const gridfnc<T>& f)
+gridfnc cosh (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = cosh(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> exp (const gridfnc<T>& f)
+gridfnc exp (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = exp(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> log (const gridfnc<T>& f)
+gridfnc log (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = log(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> log10 (const gridfnc<T>& f)
+gridfnc log10 (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = log10(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> sin (const gridfnc<T>& f)
+gridfnc sin (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = sin(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> sinh (const gridfnc<T>& f)
+gridfnc sinh (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = sinh(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> sqrt (const gridfnc<T>& f)
+gridfnc sqrt (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = sqrt(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> tan (const gridfnc<T>& f)
+gridfnc tan (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = tan(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> tanh (const gridfnc<T>& f)
+gridfnc tanh (const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = tanh(f.y);
 
     return result;
 }
-template <class T> gridfnc<T> pow (const gridfnc<T>& f, const gridfnc<T>& g)
+gridfnc pow (const gridfnc& f, const gridfnc& g)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = pow(f.y, g.y);
 
     return result;
 }
-template <class T> gridfnc<T> pow (const gridfnc<T>& f, const T& exponent)
+gridfnc pow (const gridfnc& f, const double& exponent)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = pow(f.y, exponent);
 
     return result;
 }
-template <class T> gridfnc<T> pow (const T& base, const gridfnc<T>& f)
+gridfnc pow (const double& base, const gridfnc& f)
 {
-    gridfnc<T> result;
+    gridfnc result;
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = pow(base, f.y);
@@ -1174,20 +1174,20 @@ template <class T> gridfnc<T> pow (const T& base, const gridfnc<T>& f)
     return result;
 }
 
-template <class T> gridfnc<T> ncdf (const gridfnc<T>& f)
+gridfnc ncdf (const gridfnc& f)
 {
     // 為什麼不能直接 return f.apply( ncdf_double ); ?
 
-    gridfnc<T> result; 
+    gridfnc result; 
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = f.y.apply( ncdf_double );
 
     return result;
 }
-template <class T> gridfnc<T> npdf (const gridfnc<T>& f)
+gridfnc npdf (const gridfnc& f)
 {
-    gridfnc<T> result; 
+    gridfnc result; 
 
     result.set_gridpt(f.a, f.b, f.n);
     result.y = f.y.apply( npdf );
