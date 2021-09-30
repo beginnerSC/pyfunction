@@ -199,8 +199,8 @@ public:
     friend gridfnc npdf (const gridfnc& f);
 };
 
-template<class T> int gridfnc::order = 2;
-template<class T> bool gridfnc::trap_conv = 0;
+int gridfnc::order = 2;
+bool gridfnc::trap_conv = 0;
 
 // private functions for convolution
 valarray<double> gridfnc::repeatL(const valarray<double>& a)
